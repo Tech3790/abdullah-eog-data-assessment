@@ -1,4 +1,5 @@
 require('dotenv').config({ path: __dirname + '/../.env' })
+const csv = require('csvtojson');
 
 const knex = require('knex')({
   client: 'pg',
@@ -12,11 +13,24 @@ const knex = require('knex')({
 })
 
 const migrateUsers = async () => {
+
+  const csvFilePath = __dirname + '/data-dump/people.csv'
+  const data = await csv().fromFile(csvFilePath);
+
+  const peopleArray = data.map(person => ({
+    title: person.Title,
+    first: person.First,
+    last: person.Last,
+    date: person.Date,
+    age: person.Age,
+    gender: person.Gender
+  }))
+
   // Deletes ALL existing entries
   await knex('user').del()
 
   // Inserts new entries
-  await knex('user').insert([]);
+  await knex.batchInsert('user', peopleArray, 1000)
 }
 
 module.exports = {
