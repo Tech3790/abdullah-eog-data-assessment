@@ -23,40 +23,65 @@ app.get("/migrate-users", async (_, res) => {
   res.send("rows updated!")
 });
 
-app.get("/users", async (_, res) => {
-  const users = await listUsers();
+app.get("/users", async (req, res) => {
+  const perPage = Number(req.query.perPage) || 10
+  const currentPage = Number(req.query.currentPage) || 1
+
+  console.log(perPage, currentPage);
+  const users = await listUsers(perPage, currentPage);
   res.send(users)
 });
 
-app.get("/fullnames", async (_, res) => {
-  const fullnames = await listFullNames()
+app.get("/fullnames", async (req, res) => {
+  const perPage = Number(req.query.perPage) || 10
+  const currentPage = Number(req.query.currentPage) || 1
+  const fullnames = await listFullNames(perPage, currentPage)
   res.send(fullnames)
 });
 
 app.post("/users", async (req, res) => {
 
-  const user = new User(
-    req.body.title,
-    req.body.first,
-    req.body.last,
-    req.body.age,
-    req.body.gender,
-    req.body.date)
-
-  await createUser(user);
-
-  res.sendStatus(201)
+  try {
+    const user = new User(
+      req.body.title,
+      req.body.first,
+      req.body.last,
+      req.body.age,
+      req.body.gender,
+      req.body.date)
+    await createUser(user);
+    res.sendStatus(201)
+  } catch (error) {
+      console.log(error);
+  }
 
 });
 
 app.patch("/users/:id", async (req, res) => {
-  await updateUser(req.params.id, new User(req.body.title, req.body.first, req.body.last, req.body.age, req.body.gender, req.body.date))
-  res.send("updated!")
+  try {
+    const user = new User(
+      req.body.title,
+      req.body.first,
+      req.body.last,
+      req.body.age,
+      req.body.gender,
+      req.body.date)
+
+    await updateUser(req.params.id, user)
+
+    res.send("updated!")
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 app.delete("/users/:id", async (req, res) => {
-  await deleteUser(req.params.id)
-  res.send("deleted")
+  try {
+    await deleteUser(req.params.id)
+    res.sendStatus(200)
+  } catch (error) {
+    console.log(error);
+  }
 })
 
 app.listen(process.env.MAIN_SERVICE_PORT,

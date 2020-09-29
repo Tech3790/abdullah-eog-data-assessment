@@ -1,4 +1,6 @@
 require('dotenv').config({ path: __dirname + '/../.env' })
+const { attachPaginate } = require('knex-paginate');
+attachPaginate();
 
 const knex = require('knex')({
   client: 'pg',
@@ -15,13 +17,21 @@ const createUser = async (user) => {
   await knex("user").insert(user)
 }
 
-const listUsers = async () => {
-  return await knex("user")
+const listUsers = async (perPage, currentPage) => {
+  return await knex("user").paginate({
+    perPage,
+    currentPage
+  })
 }
 
-const listFullNames = async () => {
-  const users = await knex("user")
-  return users.map(u =>
+const listFullNames = async (perPage, currentPage) => {
+  const users = await knex("user").paginate({
+    perPage,
+    currentPage
+  })
+
+  console.log(users);
+  return users.data.map(u =>
     u.first + ' ' + u.last
   )
 }
