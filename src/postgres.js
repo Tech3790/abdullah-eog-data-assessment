@@ -70,6 +70,18 @@ module.exports = {
   deleteUser
 };
 
+// comments from Abdullah: 
+// My datebase called eog and it has one table (user) that looks like this:
+
+// "id"	      "bigint"		"PrimaryKey"
+// "title"	  "text"			"notNull"
+// "first"	  "text"			"nullable"
+// "last"	    "text"			"nullable"
+// "date"	    "date"			"notNull"
+// "age"	    "text"			"notNull"
+// "gender"	  "text"			"notNull"
+
+
 /**
  * You will need to setup a connection to the postgres database
  * that you just created in addition to that we will need one table
