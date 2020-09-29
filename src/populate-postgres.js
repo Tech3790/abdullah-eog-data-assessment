@@ -13,24 +13,28 @@ const knex = require('knex')({
 })
 
 const migrateUsers = async () => {
+  try {
+    const csvFilePath = __dirname + '/data-dump/people.csv'
+    const data = await csv().fromFile(csvFilePath);
 
-  const csvFilePath = __dirname + '/data-dump/people.csv'
-  const data = await csv().fromFile(csvFilePath);
+    const peopleArray = data.map(person => ({
+      title: person.Title,
+      first: person.First,
+      last: person.Last,
+      date: person.Date,
+      age: person.Age,
+      gender: person.Gender
+    }))
 
-  const peopleArray = data.map(person => ({
-    title: person.Title,
-    first: person.First,
-    last: person.Last,
-    date: person.Date,
-    age: person.Age,
-    gender: person.Gender
-  }))
+    // Deletes ALL existing entries
+    await knex('user').del()
 
-  // Deletes ALL existing entries
-  await knex('user').del()
+    // Inserts new entries
+    await knex.batchInsert('user', peopleArray, 1000)
 
-  // Inserts new entries
-  await knex.batchInsert('user', peopleArray, 1000)
+  } catch (error) {
+    throw new Error("Could not migrate users.")
+  }
 }
 
 module.exports = {

@@ -19,24 +19,39 @@ app.use((_, res, next) => {
 });
 
 app.get("/migrate-users", async (_, res) => {
-  await migrateUsers();
-  res.send("rows updated!")
+  try {
+    await migrateUsers();
+    res.send("rows updated!")
+  } catch (error) {
+    throw new Error('Could not migrate users.')
+  }
+
 });
 
 app.get("/users", async (req, res) => {
-  const perPage = Number(req.query.perPage) || 10
-  const currentPage = Number(req.query.currentPage) || 1
+  try {
+    const perPage = Number(req.query.perPage) || 10 // default number of results per page
+    const currentPage = Number(req.query.currentPage) || 1 // default page number
+    const users = await listUsers(perPage, currentPage);
 
-  console.log(perPage, currentPage);
-  const users = await listUsers(perPage, currentPage);
-  res.send(users)
+    res.send(users)
+  } catch (error) {
+    throw new Error('Could not get users.')
+  }
+
 });
 
 app.get("/fullnames", async (req, res) => {
-  const perPage = Number(req.query.perPage) || 10
-  const currentPage = Number(req.query.currentPage) || 1
-  const fullnames = await listFullNames(perPage, currentPage)
-  res.send(fullnames)
+  try {
+    const perPage = Number(req.query.perPage) || 10
+    const currentPage = Number(req.query.currentPage) || 1
+    const fullnames = await listFullNames(perPage, currentPage)
+
+    res.send(fullnames)
+  } catch (error) {
+    throw new Error('Could not get names.')
+  }
+
 });
 
 app.post("/users", async (req, res) => {
@@ -52,7 +67,7 @@ app.post("/users", async (req, res) => {
     await createUser(user);
     res.sendStatus(201)
   } catch (error) {
-      console.log(error);
+    throw new Error('Could not create user.')
   }
 
 });
@@ -71,7 +86,7 @@ app.patch("/users/:id", async (req, res) => {
 
     res.send("updated!")
   } catch (error) {
-    console.log(error);
+    throw new Error('Could not update user.')
   }
 });
 
@@ -80,7 +95,7 @@ app.delete("/users/:id", async (req, res) => {
     await deleteUser(req.params.id)
     res.sendStatus(200)
   } catch (error) {
-    console.log(error);
+    throw new Error('Could not delete user.')
   }
 })
 

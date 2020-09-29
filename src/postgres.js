@@ -14,34 +14,52 @@ const knex = require('knex')({
 })
 
 const createUser = async (user) => {
-  await knex("user").insert(user)
+  try {
+    await knex("user").insert(user)
+  } catch (error) {
+    throw new Error('Could not create user.')
+  }
 }
 
 const listUsers = async (perPage, currentPage) => {
-  return await knex("user").paginate({
-    perPage,
-    currentPage
-  })
+  try {
+    return await knex("user").paginate({
+      perPage,
+      currentPage
+    })
+  } catch (error) {
+    throw new Error('Could not get users.')
+  }
 }
 
 const listFullNames = async (perPage, currentPage) => {
-  const users = await knex("user").paginate({
-    perPage,
-    currentPage
-  })
-
-  console.log(users);
-  return users.data.map(u =>
-    u.first + ' ' + u.last
-  )
+  try {
+    const users = await knex("user").paginate({
+      perPage,
+      currentPage
+    })
+    return users.data.map(u =>
+      u.first + ' ' + u.last
+    )
+  } catch (error) {
+    throw new Error('Could not get names.')
+  }
 }
 
 const updateUser = async (id, user) => {
-  await knex('user').where({ id }).update(user)
+  try {
+    return await knex('user').where({ id }).update(user)
+  } catch (error) {
+    throw new Error('Could not update user.')
+  }
 }
 
 const deleteUser = async (id) => {
-  await knex('user').where({ id }).del()
+  try {
+    await knex('user').where({ id }).del()
+  } catch (error) {
+    throw new Error('Could not delete user.')
+  }
 }
 
 module.exports = {

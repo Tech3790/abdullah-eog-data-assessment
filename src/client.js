@@ -36,7 +36,7 @@ app.get("/migrate-users", async (_, res) => {
         await got(`${mainServicePath}/migrate-users`);
         res.send("rows have been updated!")
     } catch (error) {
-        console.log(error.response.body);
+        throw new Error('Could not migrate users.')
     }
 })
 
@@ -48,7 +48,7 @@ app.get(`/users`, async (req, res) => {
         const response = await got(`${mainServicePath}/users`, { searchParams: { perPage, currentPage } });
         res.send(response.body)
     } catch (error) {
-        console.log(error);
+        throw new Error('Could not get users.')
     }
 });
 
@@ -60,7 +60,7 @@ app.get(`/fullnames`, async (req, res) => {
         const response = await got(`${mainServicePath}/fullnames`,{ searchParams: { perPage, currentPage } });
         res.send(response.body)
     } catch (error) {
-        console.log(error);
+        throw new Error('Could not get names.')
     }
 });
 
@@ -71,7 +71,7 @@ app.post(`/users`, async (req, res) => {
         });
         res.sendStatus(201)
     } catch (error) {
-        console.log(error);
+        throw new Error('Could not create user.')
     }
 });
 
@@ -82,7 +82,7 @@ app.patch("/users/:id", async (req, res) => {
         });
         res.sendStatus(200)
     } catch (error) {
-        console.log(error);
+        throw new Error('Could not update user.')
     }
 });
 
@@ -91,7 +91,7 @@ app.delete("/users/:id", async (req, res) => {
         await got.delete(`${mainServicePath}/users/${req.params.id}`);
         res.sendStatus(200)
     } catch (error) {
-        console.log(error);
+        throw new Error('Could not delete user.')
     }
 });
 
