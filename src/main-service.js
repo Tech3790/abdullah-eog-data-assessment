@@ -61,9 +61,10 @@ app.post("/users", async (req, res) => {
       req.body.title,
       req.body.first,
       req.body.last,
+      req.body.date,
       req.body.age,
-      req.body.gender,
-      req.body.date)
+      req.body.gender)
+      
     await createUser(user);
     res.sendStatus(201)
   } catch (error) {
@@ -78,9 +79,9 @@ app.patch("/users/:id", async (req, res) => {
       req.body.title,
       req.body.first,
       req.body.last,
+      req.body.date,
       req.body.age,
-      req.body.gender,
-      req.body.date)
+      req.body.gender)
 
     await updateUser(req.params.id, user)
 
